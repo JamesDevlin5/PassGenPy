@@ -34,7 +34,8 @@ def create_parser():
         action="store_true",
     )
     parser.add_argument(
-        "length",
+        "-l",
+        "--length",
         default=8,
         type=int,
         help="The number of characters composing the password",
