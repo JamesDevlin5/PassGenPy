@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+import argparse, random
+
+
+def create_parser():
+    parser = argparse.ArgumentParser(
+        description="Generate a randomized password string."
+    )
+    parser.add_argument(
+        "-nl",
+        "--no-lower",
+        help="Disable lowercase characters ([a-z])",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-nu",
+        "--no-upper",
+        help="Disable uppercase characters ([A-Z])",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-nn",
+        "--no-number",
+        help="Disable numerical characters ([0-9])",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-s", "--symbol", help="Enable symbolic characters", action="store_true"
+    )
+    parser.add_argument(
+        "-nr",
+        "--no-repeat",
+        help="Disables repetition of characters",
+        action="store_true",
+    )
+    parser.add_argument(
+        "length",
+        default=8,
+        type=int,
+        help="The number of characters composing the password",
+    )
+    return parser
+
+
+def aggregate_chars(lowercase, uppercase, numerical, symbolic):
+    result = []
+    if lowercase:
+        result.extend("abcdefghijklmnopqrstuvwxyz")
+    if uppercase:
+        result.extend("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    if numerical:
+        result.extend("0123456789")
+    if symbolic:
+        result.extend("""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~""")
+    return result
+
+
+args = create_parser().parse_args()
+
+lower = not args.no_lower
+upper = not args.no_upper
+number = not args.no_number
+symbol = args.symbol
+
+length = args.length
+repeat = not args.no_repeat
+
+if not (lower or upper or number or symbol):
+    exit(0)
+
+chars = aggregate_chars(lower, upper, number, symbol)
+if not repeat:
+    length = min(len(chars), length)
+
+if repeat:
+    passwd = "".join((random.choices(chars, k=length)))
+    # passwd = ''.join((random.choice(chars) for _ in range(args.length)))
+else:
+    passwd = "".join((random.sample(chars, k=length)))
+print(passwd)
